@@ -1,12 +1,20 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
 
-const useFetch = (param, update) => {
+/*
+The "get" API call.
+
+It takes an API parameter.
+
+status is the current status of the API call.
+data is a list of entries.
+*/
+const useFetch = (fetchUrl, update) => {
     const [data, setData] = useState([]);
     const [status, setStatus] = useState("idle");
 
     useEffect(() => {
-        let url = `http://localhost:1337/api/${param}`;
+        let url = `http://localhost:1337/api/${fetchUrl}`;
 
         setStatus("fetching", data);
 
@@ -17,17 +25,25 @@ const useFetch = (param, update) => {
                 setStatus("gotten", data)
              })
             .catch((error) => setStatus(error));
-    }, [param, update]);
+    }, [fetchUrl, update]);
 
     return [status, data];
 };
 
-const useSingleFetch = (param, id) => {
+/*
+The "singleFetch" API call.
+
+It takes an API parameter and an entry's id.
+
+status is the current status of the API call.
+data is the single entry that was gotten.
+*/
+const useSingleFetch = (fetchUrl, id) => {
     const [data, setData] = useState([]);
     const [status, setStatus] = useState("idle");
 
     useEffect(() => {
-        let url = `http://localhost:1337/api/${param}/${id}`;
+        let url = `http://localhost:1337/api/${fetchUrl}/${id}`;
 
         setStatus("fetching", data);
 
@@ -38,17 +54,26 @@ const useSingleFetch = (param, id) => {
                 setStatus("gotten", data)
              })
             .catch((error) => setStatus(error));
-    }, [param, id]);
+    }, [fetchUrl, id]);
 
     return [status, data];
 };
 
-const usePost = (postUrl, data) => {
+/*
+The "post" API call.
+
+It takes an API parameter.
+
+fetchData is the function called to update this API, and takes a single entry's data.
+status is the current status of the API call.
+data is the entry that was posted.
+*/
+const usePost = (postUrl, update) => {
 
     let url = `http://localhost:1337/api/${postUrl}`;
 
     const [status, setStatus] = useState("idle");
-    const [responseData, setData] = useState([]);
+    const [data, setData] = useState([]);
 
     const fetchData = async (formData) => {
         setStatus("fetching", formData);
@@ -60,21 +85,29 @@ const usePost = (postUrl, data) => {
             })
             .then((response) => {
                 setData(response.data);
-                setStatus("posted", responseData) })
+                setStatus("posted", data) })
             .catch((error) => {
                 setStatus("failed", error);
             });
     };
 
-    return [fetchData, status, responseData];
+    return [fetchData, status, data];
 };
 
+/*
+The "delete" API call.
+
+It takes an API parameter and an entry's id.
+
+status is the current status of the API call.
+data is the entry that was deleted.
+*/
 const useDelete = (deleteUrl, id) => {
 
     let url = `http://localhost:1337/api/${deleteUrl}/${id}`;
 
     const [status, setStatus] = useState("idle");
-    const [responseData, setData] = useState([]);
+    const [data, setData] = useState([]);
 
     useEffect(()=> {
         setStatus("fetching", id);
@@ -84,15 +117,24 @@ const useDelete = (deleteUrl, id) => {
                 url)
             .then((response) => {
                 setData(response.data);
-                setStatus("deleted succesfully", responseData) })
+                setStatus("deleted succesfully", data) })
             .catch((error) => {
                 setStatus("failed", error);
             });
         }, [deleteUrl, id]);
 
-    return [status, responseData];
+    return [status, data];
 }
 
+/*
+The "put" API call.
+
+It takes an API parameter and an entry's id.
+
+fetchData is the function called to update this API, and takes a single entry's data.
+status is the current status of the API call.
+data is the entry that was updated.
+*/
 const usePut = (postUrl, id, data) => {
 
     let url = `http://localhost:1337/api/${postUrl}/${id}`;
